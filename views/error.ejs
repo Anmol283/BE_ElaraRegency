@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> - Elara Regency</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Simple styling for the error page */
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        background-color: var(--cream);
+        color: var(--dark);
+      }
+      .error-container {
+        max-width: 600px;
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 3rem;
+        color: var(--gold-dark); /* Slightly darker gold for error */
+        margin-bottom: 1rem;
+      }
+      p {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .error-message {
+        background-color: rgba(255, 0, 0, 0.1);
+        color: #cc0000;
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin-bottom: 2rem;
+        font-family: monospace;
+        font-size: 0.9rem;
+        text-align: left;
+      }
+      a {
+        color: var(--gold);
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <h1><%= title %></h1>
+      <p>Oops! Something went wrong on our end.</p>
+
+      <% if (message) { %>
+      <% if (process.env.NODE_ENV !== 'production') { %>
+      <div class="error-message"><pre><%= message %></pre></div>
+      <% } else { %>
+      <p>Please try again later or contact support if the problem persists.</p>
+      <% } %>
+      <% } %>
+
+      <p>
+        <a href="/">Go back to the Homepage</a>
+      </p>
+    </div>
+  </body>
+</html>

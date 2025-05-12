@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> - Elara Regency</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .profile-section {
+        padding-top: 100px; /* Adjust based on header height */
+        padding-bottom: 4rem;
+        min-height: 70vh;
+      }
+      .profile-card,
+      .reservations-card {
+        background-color: var(--white);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow);
+        border-radius: 5px;
+      }
+      .profile-card h2,
+      .reservations-card h2 {
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--gold);
+        padding-bottom: 0.5rem;
+        display: inline-block;
+      }
+      .profile-detail {
+        margin-bottom: 1rem;
+      }
+      .profile-detail strong {
+        color: var(--dark-secondary);
+        margin-right: 0.5rem;
+      }
+      .reservation-item {
+        border: 1px solid #eee;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+        background-color: #fdfdfd;
+      }
+      .reservation-item h3 {
+        font-size: 1.3rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
+      }
+      .reservation-detail {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+      }
+      .reservation-detail strong {
+        color: var(--dark);
+      }
+       .no-reservations {
+         color: var(--gray);
+         font-style: italic;
+       }
+       /* Simple Date Formatting */
+       .date-format {
+         font-style: italic;
+         color: #555;
+       }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/header', { isLoggedIn: isLoggedIn }) %>
+
+    <main class="profile-section">
+      <div class="container">
+        <h1>My Profile</h1>
+
+        <% if (user) { %>
+        <div class="profile-card">
+          <h2>Account Details</h2>
+          <div class="profile-detail">
+            <strong>Name:</strong> <%= user.name %>
+          </div>
+          <div class="profile-detail">
+            <strong>Email:</strong> <%= user.email %>
+          </div>
+          </div>
+        <% } else { %>
+            <p>Could not load user details.</p>
+        <% } %>
+
+
+        <div class="reservations-card">
+            <h2>My Reservations</h2>
+            <% if (reservations && reservations.length > 0) { %>
+                <% reservations.forEach(reservation => { %>
+                    <div class="reservation-item">
+                        <h3>Reservation for: <%= reservation.roomType %></h3>
+                        <div class="reservation-detail">
+                            <strong>Check-in:</strong>
+                            <span class="date-format">
+                                <%= new Date(reservation.checkIn).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                            </span>
+                        </div>
+                        <div class="reservation-detail">
+                            <strong>Check-out:</strong>
+                             <span class="date-format">
+                                <%= new Date(reservation.checkOut).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                             </span>
+                        </div>
+                        <div class="reservation-detail">
+                            <strong>Guests:</strong> <%= reservation.guests %>
+                        </div>
+                        <% if (reservation.specialRequests && reservation.specialRequests !== 'None') { %>
+                            <div class="reservation-detail">
+                                <strong>Special Requests:</strong> <%= reservation.specialRequests %>
+                            </div>
+                        <% } %>
+                         <div class="reservation-detail">
+                            <strong>Booked On:</strong>
+                             <span class="date-format">
+                                <%= new Date(reservation.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                             </span>
+                        </div>
+                        </div>
+                <% }) %>
+            <% } else { %>
+                <p class="no-reservations">You have no reservations booked.</p>
+            <% } %>
+        </div>
+
+      </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/main.js"></script>
+  </body>
+</html>

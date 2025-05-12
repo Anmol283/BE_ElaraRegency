@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> - Elara Regency</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Simple styling for the error page */
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        background-color: var(--cream);
+        color: var(--dark);
+      }
+      .error-container {
+        max-width: 600px;
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 4rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
+      }
+      p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+      a {
+        color: var(--gold);
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <h1>404</h1>
+      <h2><%= title %></h2>
+      <p>Sorry, the page you are looking for cannot be found.</p>
+      <p>
+        <a href="/">Go back to the Homepage</a>
+      </p>
+    </div>
+  </body>
+</html>

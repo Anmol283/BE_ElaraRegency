@@ -1,0 +1,36 @@
+<header class="header">
+  <div class="container">
+    <nav class="navbar">
+      <a href="/" class="logo">Elara Regency</a>
+
+      <div class="hamburger">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+
+        <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+          <li><a href="/admin-dashboard">Dashboard</a></li>
+        <% } else { %>
+          <li><a href="/rooms">Rooms</a></li>
+          <li><a href="/locations">Locations</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        <% } %>
+
+        <% if (typeof isLoggedIn !== 'undefined' && isLoggedIn) { %>
+          <% if (typeof isAdmin === 'undefined' || !isAdmin) { %>
+             <li><a href="/profile">My Profile</a></li>
+             <li><a href="/reservation">Make Reservation</a></li>
+          <% } %>
+          <li><a href="/logout">Logout</a></li> <% } else { %>
+          <li><a href="/login">Login</a></li>
+          <li><a href="/register" class="btn">Register</a></li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</header>

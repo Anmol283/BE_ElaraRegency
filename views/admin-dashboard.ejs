@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/admin-dashboard.css" />
+    <style>
+      /* Ensure tables are readable */
+      .data-table td, .data-table th {
+        color: var(--cream); /* Adjust if needed based on your CSS variables */
+        vertical-align: middle;
+      }
+      .data-table .guest-info { color: var(--cream); }
+      .data-table .guest-email { color: var(--gray); }
+      .data-table tr:hover { background-color: rgba(255, 255, 255, 0.03); }
+      .section-header h3 { color: var(--gold); margin-bottom: 1rem;}
+      .no-data { color: var(--gray); font-style: italic; padding: 1rem;}
+       /* Styles for Settings Section */
+      .settings-card { background-color: var(--dark-secondary); border-radius: 5px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 1.5rem;}
+      .settings-header { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
+      .settings-header h3 { margin: 0; font-size: 1.1rem; color: var(--gold); }
+      .settings-body { padding: 1.5rem; }
+      .settings-form .form-group { margin-bottom: 1.5rem; }
+      .settings-form label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--gray);}
+      .settings-form .form-control { width: 100%; padding: 0.5rem; background-color: var(--dark); color: var(--white); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 3px; }
+      .settings-form .checkbox { display: flex; align-items: center; margin-top: 0.5rem;}
+      .settings-form .checkbox input { margin-right: 0.5rem; }
+      .settings-form .checkbox label { margin-bottom: 0; color: var(--cream); }
+      .form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/header', { isLoggedIn: true, isAdmin: true }) %>
+
+    <div class="admin-layout">
+      <%- include('partials/admin-sidebar') %>
+
+      <main class="admin-main" id="admin-content">
+        <section id="overview" class="admin-section active">
+            <div class="admin-header">
+                <h1>Dashboard Overview</h1>
+                <p>Welcome back, Admin!</p>
+            </div>
+            <div class="stats-grid">
+               <div class="stat-card">
+                  <div class="stat-icon"><i class="fas fa-users"></i></div>
+                  <div class="stat-content">
+                     <div class="stat-value"><%= users.length %></div>
+                     <div class="stat-label">Total Users</div>
+                  </div>
+               </div>
+               <div class="stat-card">
+                  <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                  <div class="stat-content">
+                     <div class="stat-value"><%= reservations.length %></div>
+                     <div class="stat-label">Total Reservations</div>
+                  </div>
+               </div>
+               </div>
+            <div class="charts-container">
+                <div class="chart-card">
+                  <div class="chart-header"><h3>Revenue Overview</h3></div>
+                  <div class="chart-body"><canvas id="revenueChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                   <div class="chart-header"><h3>Occupancy Rate</h3></div>
+                  <div class="chart-body"><canvas id="occupancyChart"></canvas></div>
+                </div>
+             </div>
+        </section>
+
+        <section id="users" class="admin-section">
+           <div class="admin-header">
+               <h1>User Management</h1>
+               <p>View and manage registered users.</p>
+           </div>
+           <div class="section-header">
+               <h3>All Users (<%= users.length %>)</h3>
+           </div>
+           <div class="table-responsive">
+               <table class="data-table">
+                   <thead>
+                       <tr>
+                           <th>User ID</th>
+                           <th>Name</th>
+                           <th>Email</th>
+                           <th>Role</th>
+                           <th>Joined At</th>
+                           <th>Actions</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <% if (users && users.length > 0) { %>
+                           <% users.forEach(user => { %>
+                               <tr>
+                                   <td><%= user._id %></td>
+                                   <td><%= user.name %></td>
+                                   <td><%= user.email %></td>
+                                   <td>
+                                      <span class="role <%= user.isAdmin ? 'admin' : 'user' %>">
+                                          <%= user.isAdmin ? 'Admin' : 'User' %>
+                                      </span>
+                                  </td>
+                                   <td><%= new Date(user.createdAt).toLocaleDateString() %></td>
+                                   <td>
+                                      <div class="action-buttons">
+                                           <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                                           <button class="action-btn edit" title="Edit User"><i class="fas fa-edit"></i></button>
+                                           <button class="action-btn delete" title="Delete User"><i class="fas fa-trash"></i></button>
+                                      </div>
+                                  </td>
+                               </tr>
+                           <% }) %>
+                       <% } else { %>
+                           <tr>
+                               <td colspan="6" class="no-data">No users found.</td>
+                           </tr>
+                       <% } %>
+                   </tbody>
+               </table>
+           </div>
+        </section>
+
+        <section id="bookings" class="admin-section">
+            <div class="admin-header">
+               <h1>Reservation Management</h1>
+               <p>View all submitted reservations.</p>
+           </div>
+           <div class="section-header">
+               <h3>All Reservations (<%= reservations.length %>)</h3>
+           </div>
+           <div class="table-responsive">
+               <table class="data-table">
+                   <thead>
+                       <tr>
+                           <th>Booking ID</th>
+                           <th>Guest</th> <th>Room Type</th>
+                           <th>Check-in</th>
+                           <th>Check-out</th>
+                           <th>Guests</th>
+                           <th>Booked On</th>
+                           <th>Actions</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <% if (reservations && reservations.length > 0) { %>
+                           <% reservations.forEach(res => { %>
+                               <tr>
+                                   <td><%= res._id %></td>
+                                   <td>
+                                       <% if (res.userId) { %>
+                                          <div class="guest-info">
+                                              <span class="guest-name"><%= res.userId.name || 'N/A' %></span>
+                                              <span class="guest-email"><%= res.userId.email || 'N/A' %></span>
+                                          </div>
+                                       <% } else { %>
+                                           <span class="no-data">User Not Found</span>
+                                       <% } %>
+                                   </td>
+                                   <td><%= res.roomType %></td>
+                                   <td><%= new Date(res.checkIn).toLocaleDateString() %></td>
+                                   <td><%= new Date(res.checkOut).toLocaleDateString() %></td>
+                                   <td><%= res.guests %></td>
+                                   <td><%= new Date(res.submittedAt).toLocaleDateString() %></td>
+                                   <td>
+                                       <div class="action-buttons">
+                                            <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit" title="Edit Reservation"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete" title="Delete Reservation"><i class="fas fa-trash"></i></button>
+                                       </div>
+                                   </td>
+                               </tr>
+                           <% }) %>
+                       <% } else { %>
+                           <tr>
+                               <td colspan="8" class="no-data">No reservations found.</td>
+                           </tr>
+                       <% } %>
+                   </tbody>
+               </table>
+           </div>
+        </section>
+
+        <section id="rooms" class="admin-section">
+            <div class="admin-header">
+               <h1>Room Management</h1>
+               <p>View and manage hotel rooms.</p>
+           </div>
+           <div class="section-header">
+               <h3>Hotel Rooms (Example Data)</h3>
+               <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Room</button>
+           </div>
+           <div class="table-responsive">
+               <table class="data-table">
+                   <thead>
+                       <tr>
+                           <th>Room No.</th>
+                           <th>Type</th>
+                           <th>Location</th>
+                           <th>Capacity</th>
+                           <th>Price/Night</th>
+                           <th>Status</th>
+                           <th>Actions</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <tr>
+                           <td>101</td>
+                           <td>Standard Room</td>
+                           <td>New York</td>
+                           <td>2 Adults</td>
+                           <td>$250</td>
+                           <td><span class="status available">Available</span></td>
+                           <td>
+                               <div class="action-buttons">
+                                    <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn edit" title="Edit Room"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn maintenance" title="Set Maintenance"><i class="fas fa-tools"></i></button>
+                                    <button class="action-btn delete" title="Delete Room"><i class="fas fa-trash"></i></button>
+                               </div>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td>505</td>
+                           <td>Deluxe Suite</td>
+                           <td>Paris</td>
+                           <td>3 Adults, 1 Child</td>
+                           <td>$550</td>
+                           <td><span class="status occupied">Occupied</span></td>
+                           <td>
+                               <div class="action-buttons">
+                                    <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn edit" title="Edit Room"><i class="fas fa-edit"></i></button>
+                                     <button class="action-btn maintenance" title="Set Maintenance"><i class="fas fa-tools"></i></button>
+                                    <button class="action-btn delete" title="Delete Room"><i class="fas fa-trash"></i></button>
+                               </div>
+                           </td>
+                       </tr>
+                        <tr>
+                           <td>1201</td>
+                           <td>Presidential Suite</td>
+                           <td>Dubai</td>
+                           <td>4 Adults</td>
+                           <td>$1200</td>
+                           <td><span class="status maintenance">Maintenance</span></td>
+                           <td>
+                               <div class="action-buttons">
+                                    <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn edit" title="Edit Room"><i class="fas fa-edit"></i></button>
+                                     <button class="action-btn maintenance" title="Set Available"><i class="fas fa-tools"></i></button> <button class="action-btn delete" title="Delete Room"><i class="fas fa-trash"></i></button>
+                               </div>
+                           </td>
+                       </tr>
+                       </tbody>
+               </table>
+           </div>
+        </section>
+        <section id="settings" class="admin-section">
+            <div class="admin-header">
+               <h1>Settings</h1>
+               <p>Configure site-wide settings.</p>
+           </div>
+
+           <div class="settings-card">
+             <div class="settings-header"><h3>General Settings</h3></div>
+             <div class="settings-body">
+               <form class="settings-form">
+                  <div class="form-group">
+                      <label for="siteName">Site Name</label>
+                      <input type="text" id="siteName" class="form-control" value="Elara Regency" readonly> </div>
+                  <div class="form-group">
+                      <label for="adminEmail">Admin Contact Email</label>
+                      <input type="email" id="adminEmail" class="form-control" value="admin@elararegency.com" readonly>
+                  </div>
+                   <div class="form-group">
+                       <label>Maintenance Mode</label>
+                       <div class="checkbox">
+                           <input type="checkbox" id="maintenanceMode" disabled> <label for="maintenanceMode">Enable site maintenance mode</label>
+                       </div>
+                   </div>
+                   <div class="form-actions">
+                       <button type="button" class="btn btn-primary" disabled>Save General Settings</button> </div>
+               </form>
+             </div>
+           </div>
+
+            <div class="settings-card">
+             <div class="settings-header"><h3>Notification Settings</h3></div>
+             <div class="settings-body">
+               <form class="settings-form">
+                   <div class="form-group">
+                       <label>Receive Email Notifications For:</label>
+                       <div class="checkbox">
+                           <input type="checkbox" id="notifyNewBooking" checked disabled>
+                           <label for="notifyNewBooking">New Bookings</label>
+                       </div>
+                       <div class="checkbox">
+                           <input type="checkbox" id="notifyContactForm" checked disabled>
+                           <label for="notifyContactForm">Contact Form Submissions</label>
+                       </div>
+                        <div class="checkbox">
+                           <input type="checkbox" id="notifyLowAvailability" disabled>
+                           <label for="notifyLowAvailability">Low Room Availability</label>
+                       </div>
+                   </div>
+                    <div class="form-actions">
+                       <button type="button" class="btn btn-primary" disabled>Save Notification Settings</button>
+                   </div>
+               </form>
+             </div>
+           </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script src="/js/admin-dashboard.js"></script> </body>
+</html>
