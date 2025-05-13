@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "tsc"
+    "build": "echo 'No build step required'"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -14,13 +14,9 @@
     "cors": "latest",
     "ejs": "^3.1.10",
     "express": "latest",
-    "fs": "latest",
-    "helmet": "latest",
     "mongoose": "^8.14.2",
-    "morgan": "latest",
-    "path": "latest"
+    "morgan": "latest"
   },
   "devDependencies": {
-    "@types/node": "^22"
   }
 }
