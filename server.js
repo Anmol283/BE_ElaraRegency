@@ -30,7 +30,7 @@ const PORT = process.env.PORT || 3000;
 
 // --- MongoDB Connection ---
 // SECURITY: Use environment variables for MONGO_URI in production
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://arshth134:Y4dpdQF0Og0o587H@cluster0.kgbc2av.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/elara-regency';
 
 const connectDB = async () => {
   try {
